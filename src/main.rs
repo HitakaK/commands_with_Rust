@@ -26,6 +26,7 @@ fn handle_stdin() {
 
 
 use std::env;
+mod parse_arg;
 mod cmds;
 
 fn main() {
@@ -34,8 +35,19 @@ fn main() {
     // handle_stdin();
     
     let args: Vec<String> = env::args().skip(1).collect();
-    if args[0] == "cut" {
-        cmds::cut::my_cut(&args[1], args[2].trim().parse().unwrap());
+
+    let command = parse_arg::run(args);
+
+    match command {
+        Ok(parse_arg::Command::Cut(target, opts)) => {
+            let confs = cmds::cut::parse_cut(opts);
+            cmds::cut::run(confs, target);
+        }
+        Err(message) => { eprintln!("{}", message); }
     }
+
+    // if args[0] == "cut" {
+    //     cmds::cut::my_cut(&args[1], args[2].trim().parse().unwrap());
+    // }
     
 }
